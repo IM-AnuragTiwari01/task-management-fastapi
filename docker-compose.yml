@@ -1,0 +1,34 @@
+services:
+  app:
+    image: anurag0039/task-app:latest
+    container_name: task_management_api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_CONNECTION=mysql+pymysql://mysql:mysql@mysql_db:3306/mydb
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+
+  mysql_db:
+    image: mysql:8.0
+    container_name: MySql-Task_Management_App
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pmysql"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_data:
